@@ -3,7 +3,7 @@ const app = express();
 const cors = require('cors');
 const port = process.env.PORT || 5000;
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.use(cors());
 app.use(express.json());
@@ -24,7 +24,7 @@ async function run() {
             const result = await listCollection.insertOne(newTodo);
             res.send(result);
         })
-        //get todo
+        //get todos
         app.get('/todos', async (req, res) => {
             const query = {}
             const cursor = listCollection.find(query);
@@ -32,6 +32,26 @@ async function run() {
             res.send(result);
         })
         //get one todo
+        app.get('/todo/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id)
+            const query = { _id: ObjectId(id) };
+            const result = await listCollection.findOne(query);
+            res.send(result);
+        })
+
+        //update todo
+        app.put('/todo/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateTodo = req.body;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: updateTodo,
+            };
+            const result = await listCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
 
         console.log('database connected');
     }
