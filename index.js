@@ -31,6 +31,8 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         })
+        //get one todo
+
         console.log('database connected');
     }
     finally {
